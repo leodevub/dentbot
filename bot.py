@@ -4,7 +4,7 @@ import httpx
 from datetime import datetime
 
 API_URL = "http://dentbot-production.up.railway.app"
-CLINICA_ID = "b5e74e86-e9c5-4547-a0b4-e1dcd207280d"
+CLINICA_ID = "2417d9e6-2e15-4356-9c43-a5554bf6458c"
 SENHA_ADMIN = "dentsec2026"
 
 meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
