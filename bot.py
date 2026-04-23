@@ -197,7 +197,7 @@ async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Use o menu abaixo:", reply_markup=menu())
 
-app = ApplicationBuilder().token("8766237462:AAFC6rhf6qJoWGlenrlqMbMHRz2uCWmp9lk").build()
+app = ApplicationBuilder().token("8775394536:AAH4pw5Xl22giFGZ-KrUBuEVitqyZpNIIEI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("admin", admin))
 app.add_handler(CallbackQueryHandler(botao))
