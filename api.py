@@ -64,19 +64,21 @@ def listar_agendamentos(clinica_id: str):
     db.close()
     return resultado
 
-@app.post("/agendamentos")
-def criar_agendamento(dados: AgendamentoSchema):
+@app.post("/setup")
+def setup():
+    import uuid
     db = Session()
-    agendamento = Agendamento(
-        id=str(__import__('uuid').uuid4()),
-        data=datetime.fromisoformat(dados.data),
-        pacienteId=dados.pacienteId,
-        clinicaId=dados.clinicaId
+    clinica = Clinica(
+        id=str(uuid.uuid4()),
+        nome="Clínica DentSec",
+        email="contato@dentsec.com"
     )
-    db.add(agendamento)
+    db.add(clinica)
     db.commit()
+    db.refresh(clinica)
+    id_gerado = clinica.id
     db.close()
-    return {"mensagem": "Agendamento criado!"}
+    return {"clinica_id": id_gerado}
 
 @app.get("/agendamentos/{clinica_id}/disponibilidade")
 def verificar_disponibilidade(clinica_id: str, data: str):
