@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Cal
 import httpx
 from datetime import datetime
 
-API_URL = "http://dentbot-production.up.railway.app"
+API_URL = "https://dentbot-production.up.railway.app"
 CLINICA_ID = "2417d9e6-2e15-4356-9c43-a5554bf6458c"
 SENHA_ADMIN = "dentsec2026"
 
@@ -21,23 +21,16 @@ def menu():
     ])
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.clear()
     await update.message.reply_text(
         "Olá! Bem-vindo à Clínica DentSec! 🦷\n\nComo posso te ajudar?",
         reply_markup=menu()
     )
 
-async def consultas(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    async with httpx.AsyncClient() as client:
-        resposta = await client.get(f"{API_URL}/agendamentos/{CLINICA_ID}")
-        agendamentos = resposta.json()
-    if not agendamentos:
-        await update.message.reply_text("Nenhuma consulta agendada.")
-        return
-    texto = "Consultas agendadas:\n\n"
-    for a in agendamentos:
-        data_dt = datetime.fromisoformat(a["data"])
-        texto += f"{formatar_data(data_dt)} — Status: {a['status']}\n"
-    await update.message.reply_text(texto)
+async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.clear()
+    context.user_data["etapa"] = "admin_senha"
+    await update.message.reply_text("Digite a senha de administrador:")
 
 async def botao(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -77,33 +70,31 @@ async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if etapa == "admin_senha":
         if texto == SENHA_ADMIN:
             context.user_data["etapa"] = None
-        async with httpx.AsyncClient() as client:
-            resposta = await client.get(f"{API_URL}/agendamentos/{CLINICA_ID}")
-            agendamentos = resposta.json()
-        
-        if not agendamentos:
-            await update.message.reply_text("Nenhum agendamento encontrado.")
-            return
-        
-        texto_admin = "📋 Todos os agendamentos:\n\n"
-        for a in agendamentos:
-            data_dt = datetime.fromisoformat(a["data"])
-            texto_admin += (
-                f"👤 {a['paciente']['nome']}\n"
-                f"📅 {formatar_data(data_dt)}\n"
-                f"Status: {a['status']}\n"
-                f"─────────────\n"
-            )
-        await update.message.reply_text(texto_admin)
-    else:
-        context.user_data["etapa"] = None
-        await update.message.reply_text("Senha incorreta!")
-    if etapa == "nome":
+            async with httpx.AsyncClient() as client:
+                resposta = await client.get(f"{API_URL}/agendamentos/{CLINICA_ID}")
+                agendamentos = resposta.json()
+            if not agendamentos:
+                await update.message.reply_text("Nenhum agendamento encontrado.")
+                return
+            texto_admin = "📋 Todos os agendamentos:\n\n"
+            for a in agendamentos:
+                data_dt = datetime.fromisoformat(a["data"])
+                texto_admin += (
+                    f"👤 {a['paciente']['nome']}\n"
+                    f"📅 {formatar_data(data_dt)}\n"
+                    f"Status: {a['status']}\n"
+                    f"─────────────\n"
+                )
+            await update.message.reply_text(texto_admin)
+        else:
+            context.user_data["etapa"] = None
+            await update.message.reply_text("Senha incorreta!")
+
+    elif etapa == "nome":
         dados["nome"] = texto
         context.user_data["dados"] = dados
         context.user_data["etapa"] = "telefone"
         await update.message.reply_text("Qual é o seu telefone?")
-        
 
     elif etapa == "telefone":
         dados["telefone"] = texto
@@ -205,16 +196,6 @@ async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
         await update.message.reply_text("Use o menu abaixo:", reply_markup=menu())
-
-
-async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data["etapa"] = "admin_senha"
-    await update.message.reply_text("Digite a senha de administrador:") 
-
-    async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-     print("Admin chamado!")
-    context.user_data["etapa"] = "admin_senha"
-    await update.message.reply_text("Digite a senha de administrador:")      
 
 app = ApplicationBuilder().token("8766237462:AAFC6rhf6qJoWGlenrlqMbMHRz2uCWmp9lk").build()
 app.add_handler(CommandHandler("start", start))
