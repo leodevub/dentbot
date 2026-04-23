@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Cal
 import httpx
 from datetime import datetime
 
-API_URL = "http://localhost:8000"
+API_URL = "dentbot-production.up.railway.app"
 CLINICA_ID = "b5e74e86-e9c5-4547-a0b4-e1dcd207280d"
 SENHA_ADMIN = "dentsec2026"
 
