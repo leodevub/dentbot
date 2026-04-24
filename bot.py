@@ -2,7 +2,9 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import httpx
 from datetime import datetime
+import os
 
+token = os.getenv("TOKEN")
 API_URL = "https://dentbot-production.up.railway.app"
 CLINICA_ID = "2417d9e6-2e15-4356-9c43-a5554bf6458c"
 SENHA_ADMIN = "dentsec2026"
@@ -197,8 +199,7 @@ async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Use o menu abaixo:", reply_markup=menu())
 
-app = ApplicationBuilder().token("8775394536:AAH4pw5Xl22giFGZ-KrUBuEVitqyZpNIIEI").build()
-app.add_handler(CommandHandler("start", start))
+app = ApplicationBuilder().token(token).build()
 app.add_handler(CommandHandler("admin", admin))
 app.add_handler(CallbackQueryHandler(botao))
 app.add_handler(MessageHandler(filters.TEXT, responder))
