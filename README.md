@@ -1,6 +1,3 @@
-Não tem! Vamos criar. Cola isso no arquivo README.md dentro da pasta do dentbot e sobe no GitHub:
-markdown# 🦷 DentBot — Sistema de Agendamento Odontológico
-
 Bot de agendamento de consultas odontológicas com IA integrada, desenvolvido do zero e em uso real por uma clínica odontológica.
 
 🔗 **[Acessar o Bot](https://t.me/Dentist_cbot)**
